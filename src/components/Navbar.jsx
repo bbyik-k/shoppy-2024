@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { HiOutlineShoppingBag } from 'react-icons/hi2';
 import { MdOutlineWbIncandescent } from 'react-icons/md';
+import { login } from '../api/firebase';
 
 export default function Navbar() {
   return (
@@ -17,7 +18,7 @@ export default function Navbar() {
           <MdOutlineWbIncandescent className='text-2xl' />
           New!
         </Link>
-        <button>Login</button>
+        <button onClick={login}>Login</button>
       </nav>
     </header>
   );
