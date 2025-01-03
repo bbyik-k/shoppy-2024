@@ -3,23 +3,14 @@ import { Link } from 'react-router-dom';
 import { HiOutlineShoppingBag } from 'react-icons/hi2';
 import { MdOutlineWbIncandescent } from 'react-icons/md';
 import { login, logout, onUserStateChange } from '../api/firebase';
+import User from './User';
 
 export default function Navbar() {
   const [user, setUser] = useState();
 
   useEffect(() => {
-    onUserStateChange((user) => {
-      console.log(user);
-      setUser(user);
-    });
+    onUserStateChange(setUser);
   }, []);
-
-  const handleLogin = () => {
-    login().then(setUser);
-  };
-  const handleLogout = () => {
-    logout().then(setUser);
-  };
 
   return (
     <header className='flex justify-between border-b border-gray-300 p-2'>
@@ -34,8 +25,9 @@ export default function Navbar() {
           <MdOutlineWbIncandescent className='text-2xl' />
           New!
         </Link>
-        {!user && <button onClick={handleLogin}>Login</button>}
-        {user && <button onClick={handleLogout}>Logout</button>}
+        {user && <User user={user} />}
+        {!user && <button onClick={login}>Login</button>}
+        {user && <button onClick={logout}>Logout</button>}
       </nav>
     </header>
   );
