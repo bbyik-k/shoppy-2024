@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getDatabase, ref, child, get } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -9,10 +10,12 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
+const database = getDatabase(app);
+
 provider.setCustomParameters({ prompt: 'select_account' });
 
 export function login() {
@@ -23,7 +26,26 @@ export function logout() {
 }
 
 export function onUserStateChange(callback) {
-  onAuthStateChanged(auth, (user) => {
-    callback(user);
+  onAuthStateChanged(auth, async (user) => {
+    const updatedUser = user ? await adminUser(user) : null;
+    callback(updatedUser);
   });
+}
+
+async function adminUser(user) {
+  return get(child(ref(database), `admins`))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        const admins = snapshot.val();
+        const isAdmin = admins.includes(user.uid);
+        return { ...user, isAdmin };
+      } else {
+        console.log('No data available');
+        return user;
+      }
+    })
+    .catch((error) => {
+      console.error('Error fetching admin data:', error);
+      throw error;
+    });
 }
