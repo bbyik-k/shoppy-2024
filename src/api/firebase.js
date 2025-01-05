@@ -61,3 +61,31 @@ export async function addNewProduct(product, image) {
     options: product.options.split(','),
   });
 }
+
+export async function getProducts() {
+  return get(child(ref(database), `products`))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        console.log(snapshot.val());
+        return Object.values(snapshot.val());
+      } else {
+        console.log('No data available');
+        return [];
+      }
+    })
+    .catch((error) => {
+      console.error('Error fetching products:', error);
+      throw error;
+    });
+}
+export async function gettttProducts() {
+  return get(child(ref(database), 'products')).then((snapshot) => {
+    if (snapshot.exists()) {
+      console.log(snapshot.val());
+      return Object.values(snapshot.val());
+    } else {
+      console.log('No data available');
+      return [];
+    }
+  });
+}
