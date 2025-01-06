@@ -4,7 +4,23 @@ import { getProducts } from '../api/firebase';
 import ProductCard from './ProductCard';
 
 export default function Products() {
-  const { isLoading, error, data: products } = useQuery({ queryKey: ['products'], queryFn: getProducts });
+  const {
+    isLoading,
+    error,
+    data: products,
+  } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const rawProducts = await getProducts();
+
+      console.log(`rawProducts`);
+      console.log(rawProducts);
+      return rawProducts.map((product) => ({
+        ...product,
+        priceFormatted: product.price.toLocaleString('ko-KR'), // 변환된 가격 추가
+      }));
+    },
+  });
   return (
     <>
       {isLoading && <p>Loading...</p>}
