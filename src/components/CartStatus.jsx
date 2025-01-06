@@ -1,17 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { TiShoppingCart } from 'react-icons/ti';
-import { getCart } from '../api/firebase';
-import { useAuthContext } from '../context/AuthContext';
+import useCart from '../hooks/useCart';
 
 export default function CartStatus() {
-  const { uid } = useAuthContext();
-  const { data: products } = useQuery({
-    queryKey: ['carts'],
-    queryFn: async () => {
-      return await getCart(uid);
-    },
-  });
+  const {
+    cartQuery: { data: products },
+  } = useCart();
+
   return (
     <div className='relative'>
       <TiShoppingCart className='text-4xl' />
