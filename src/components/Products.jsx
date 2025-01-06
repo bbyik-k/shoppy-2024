@@ -20,6 +20,7 @@ export default function Products() {
         priceFormatted: product.price.toLocaleString('ko-KR'), // 변환된 가격 추가
       }));
     },
+    staleTime: 1000 * 120,
   });
   return (
     <>
