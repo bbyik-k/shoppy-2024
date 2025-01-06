@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getDatabase, ref, child, get, set } from 'firebase/database';
+import { getDatabase, ref, child, get, set, remove } from 'firebase/database';
 import { v4 as uuid } from 'uuid';
 
 const firebaseConfig = {
@@ -41,7 +41,7 @@ async function adminUser(user) {
         const isAdmin = admins.includes(user.uid);
         return { ...user, isAdmin };
       } else {
-        console.log('No data available');
+        console.error('No data available');
         return user;
       }
     })
@@ -66,10 +66,9 @@ export async function getProducts() {
   return get(child(ref(database), `products`))
     .then((snapshot) => {
       if (snapshot.exists()) {
-        console.log(snapshot.val());
         return Object.values(snapshot.val());
       } else {
-        console.log('No data available');
+        console.error('No data available');
         return [];
       }
     })
@@ -79,13 +78,31 @@ export async function getProducts() {
     });
 }
 export async function gettttProducts() {
-  return get(child(ref(database), 'products')).then((snapshot) => {
-    if (snapshot.exists()) {
-      console.log(snapshot.val());
-      return Object.values(snapshot.val());
-    } else {
-      console.log('No data available');
-      return [];
-    }
+  return get(child(ref(database), 'products')) //
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        return Object.values(snapshot.val());
+      } else {
+        console.error('No data available');
+        return [];
+      }
+    });
+}
+
+export async function getCart(userId) {
+  return get(ref(database, `carts/${userId}`)) //
+    .then((snapshot) => {
+      const items = snapshot.val() || {};
+      return Object.values(items);
+    });
+}
+
+export async function addOrUpdateToCart(userId, product) {
+  set(ref(database, `carts/${userId}/${product.id}`), {
+    ...product,
   });
+}
+
+export async function removeFromCart(userId, productId) {
+  return remove(ref(database, `carts/${userId}/${productId}`));
 }
